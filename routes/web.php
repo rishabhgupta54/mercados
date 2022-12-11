@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Auth::routes([
+    'register' => FALSE,
+]);
+
+Route::middleware('auth')->group(function() {
+    Route::resource('/', \App\Http\Controllers\IndexController::class);
+    Route::resource('/users', \App\Http\Controllers\UserController::class);
 });
