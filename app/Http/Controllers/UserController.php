@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\Helper;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -64,13 +65,75 @@ class UserController extends Controller {
 
     /**
      * Display a listing of the resource.
+     *
+     * @param \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
-    public function index() {
+    public function index(Request $request) {
+        $users = new User();
+        if (!empty($request->search)) {
+            $users = $users->where('first_name', 'like', '%' . $request->search . '%')->orWhere('last_name', 'like', '%' . $request->search . '%')->orWhere('username', 'like', '%' . $request->search . '%')->orWhere('email', 'like', '%' . $request->search . '%');
+        }
+        if (!empty($request->start_date)) {
+            $users = $users->where('created_at', '>=', $request->start_date);
+        }
+        if (!empty($request->end_date)) {
+            $users = $users->where('created_at', '<=', $request->start_date);
+        }
+
+        if (!empty($request->start_date) && !empty($request->end_date) && ($request->start_date != $request->end_date)) {
+            $users = $users->whereBetween('created_at', [
+                $request->start_date,
+                $request->end_date,
+            ]);
+        }
+
+        if ($request->has('export')) {
+            $users = $users->get();
+
+            $tableHeaders = [
+                'First Name',
+                'Last Name',
+                'Username',
+                'Email',
+                'Verified User',
+                'Gender',
+                'Number of Vehicles',
+                'Joined On',
+            ];
+
+            $file = 'user-export-' . date('Y-m-d-H-i-s') . '.csv';
+
+            header('Content-type: application/csv');
+            header('Content-Disposition: attachment; filename=' . $file);
+
+            $output = fopen('php://output', 'w');
+            fputcsv($output, $tableHeaders);
+            foreach ($users as $user) {
+                $records = [
+                    $user->first_name,
+                    $user->last_name,
+                    $user->username,
+                    $user->email,
+                    $user->email_verified_at,
+                    ($user->gender == 1 ? 'Male' : 'Female'),
+                    $user->number_of_vehicles,
+                    date('F d, Y', strtotime($user->created_at)),
+                ];
+                fputcsv($output, $records);
+            }
+            fclose($output);
+            exit();
+        }
+
+        $users = $users->paginate(20);
+
         return view($this->viewPath . 'index', [
             'pageTitle' => Str::plural($this->pageTitle),
             'routeName' => $this->routeName,
-            'users' => User::paginate(20),
+            'users' => $users,
+            'request' => $request->all(),
         ]);
     }
 

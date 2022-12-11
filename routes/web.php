@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes([
     'register' => FALSE,
+    'forget-password' => FALSE,
 ]);
 
 Route::middleware('auth')->group(function() {

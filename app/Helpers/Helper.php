@@ -6,6 +6,16 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
 class Helper {
+    /**
+     *
+     * To create the slug for the resource
+     *
+     * @param String $model String representation of the class
+     * @param String $slug Text which you want to convert into slug
+     * @param String $column Database column in which you want to store the slug
+     *
+     * @return string
+     */
     public static function generateSlug($model, $slug, $column = 'slug') {
         $temp_slug = Str::slug($slug);
         $results = $model::where($column, $temp_slug)->get();
@@ -27,6 +37,15 @@ class Helper {
         }
     }
 
+    /**
+     * To show the toastr Alert
+     *
+     * @param String $case
+     * @param String $message
+     * @param bool $is_validation_failed
+     *
+     * @return void
+     */
     public static function toastrMessage($case = '', $message = '', $is_validation_failed = FALSE) {
         $toastrMessage = '';
         $type = 'success';
@@ -58,10 +77,23 @@ class Helper {
         self::showToastr($type, $toastrMessage);
     }
 
+    /**
+     * @param string $type
+     * @param string $message
+     *
+     * @return void
+     */
+
     public static function showToastr($type, $message) {
         Session::flash($type, $message);
     }
 
+    /**
+     * To convert the array into the collection
+     * @param $array
+     *
+     * @return \Illuminate\Support\Collection
+     */
     public static function convertArrayToObject($array) {
         $collection = collect();
         if (!empty($array)) {

@@ -1,7 +1,7 @@
 <div class="left-side-menu">
     <div class="h-100" data-simplebar>
         <div class="user-box text-center">
-            <img src="{{ asset('assets/images/users/user-1.jpg') }}" alt="user-img" title="Mat Helme" class="rounded-circle img-thumbnail avatar-md">
+            <img src="{{ asset('assets/images/users/profile.jpg') }}" alt="user-img" title="Mat Helme" class="rounded-circle img-thumbnail avatar-md">
             <div class="dropdown">
                 <span href="#" class="user-name dropdown-toggle h5 mt-2 mb-1 d-block">{{ auth()->user()->first_name . ' ' . auth()->user()->last_name }}</span>
             </div>

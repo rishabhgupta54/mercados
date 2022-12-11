@@ -28,6 +28,8 @@ class UserFactory extends Factory {
             'number_of_vehicles' => rand(1, 10),
             'gender' => rand(1, 2),
             'remember_token' => NULL,
+            'created_at' => $createdAt = $this->faker->dateTime(),
+            'updated_at' => $createdAt,
         ];
     }
 
